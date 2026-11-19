@@ -67,13 +67,11 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-            <!--
              <plugin>
                <groupId>org.sonarsource.scanner.maven</groupId>
                <artifactId>sonar-maven-plugin</artifactId>
                <version>5.9.0.7382</version>
             </plugin>
-            -->
         </plugins>
     </build>
 
