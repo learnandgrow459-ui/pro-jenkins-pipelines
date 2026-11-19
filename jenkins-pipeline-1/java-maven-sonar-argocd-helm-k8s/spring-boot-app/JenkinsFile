@@ -67,7 +67,6 @@ pipeline
                     sh '''
                        git config user.email "learnandgrow@gmail.com"
                        git config user.name "learnandgrow459-ui"
-                       BUILD_NUMBER =${BUILD_NUMBER}
                        sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" jenkins-pipeline-1/java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                        git add jenkins-pipeline-1/java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yaml
                        git commit -m "Updated deployment image to version ${BUILD_NUMBER}"
