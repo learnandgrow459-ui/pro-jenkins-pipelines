@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: spring-boot-app
-        image: nidhi2425/pipeline-1:14
+        image: nidhi2425/pipeline-1:15
         ports:
         - containerPort: 8080
