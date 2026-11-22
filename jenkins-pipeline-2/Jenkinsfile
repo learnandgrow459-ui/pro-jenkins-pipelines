@@ -1,0 +1,71 @@
+pipeline{
+    agent any
+    environment{
+      IMAGE_NAME = "nidhi2425/ecommerce-app"
+      GIT_REPO_NAME = "pro-jenkins-pipelines"
+      GIT_USER_NAME = "learnandgrow459-ui"
+    }
+    stages{
+      stage('Checkout'){
+        steps{
+          checkout scm
+        }
+        
+      }
+      stage('BUild and Push Image'){
+        when {branch 'main'}
+        steps{
+         script{
+            env.IMAGE_TAG ="build-${BUILD_NUMBER}" 
+            withCredentials([usernamePassword(
+                credentialsId:'dockerhub-creds', 
+                usernameVariable: 'DOCKER_USER', 
+                passwordVariable: 'DOCKER_PASS'
+                )]){
+                  sh '''
+                  docker image build -t "${IMAGE_NAME}:${IMAGE_TAG}" pro-jenkins-pipeline-2/.
+                  echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
+                  docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+                  '''
+                }
+            }
+         }
+        }
+       stage('Update Deployment File'){
+        when {branch 'main'}
+        steps{
+            script{
+                withCredentials([string(
+                    credentialsId: 'github-creds',
+                    variable: 'GIT_TOKEN'
+                   
+                )]) {
+                    sh '''
+                    set -e
+                    git config user.name "nidhi"
+                    git config user.email "nidhi@gmail.com"
+
+                    git fetch origin
+                    git checkout main
+                    git reset --hard origin/main
+                    
+                    sed -i "s|image:.*|image:${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yaml
+
+                    git add k8s/deployment.yaml
+                    git diff --cached --quiet || git commit -m "Updated image to ${IMAGE_TAG}"
+                    git push "https://${GIT_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}" HEAD:main
+                    '''
+                }
+            }
+        }
+       } 
+      }
+      post{
+        always{
+            sh '''
+            docker logout || true
+            docker rmi "${IMAGE_NAME}:${IMAGE_TAG}" || true          
+            '''
+        }
+      }
+    }
