@@ -23,7 +23,7 @@ pipeline{
                 passwordVariable: 'DOCKER_PASS'
                 )]){
                   sh '''
-                  docker image build -t "${IMAGE_NAME}:${IMAGE_TAG}" pro-jenkins-pipelines/jenkins-pipeline-2/.
+                  docker image build -t "${IMAGE_NAME}:${IMAGE_TAG}" jenkins-pipeline-2/.
                   echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
                   docker push "${IMAGE_NAME}:${IMAGE_TAG}"
                   '''
@@ -49,7 +49,7 @@ pipeline{
                     git checkout main
                     git reset --hard origin/main
                     
-                    sed -i "s|image:.*|image:${IMAGE_NAME}:${IMAGE_TAG}|" pro-jenkins-pipelines/jenkins-pipeline-2/k8s/deployment.yaml
+                    sed -i "s|image:.*|image:${IMAGE_NAME}:${IMAGE_TAG}|" jenkins-pipeline-2/k8s/deployment.yaml
 
                     git add k8s/deployment.yaml
                     git diff --cached --quiet || git commit -m "Updated image to ${IMAGE_TAG}"
