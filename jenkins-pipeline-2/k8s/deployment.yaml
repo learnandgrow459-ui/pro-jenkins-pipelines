@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: movie-app
-        image:nidhi2425/ecommerce-app:build-6
+        image:nidhi2425/ecommerce-app:build-7
         ports:
         - containerPort: 5000
